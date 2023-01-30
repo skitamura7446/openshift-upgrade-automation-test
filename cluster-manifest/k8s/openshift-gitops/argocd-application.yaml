@@ -12,7 +12,7 @@ spec:
   project: sample-blog
   source:
     kustomize:
-    path: k8s/overlays/prod
+    path: sample-blog-manifest/k8s/overlays/prod
     repoURL: https://github.com/skitamura7446/openshift-upgrade-automation-test.git 
     targetRevision: master
   syncPolicy: {}

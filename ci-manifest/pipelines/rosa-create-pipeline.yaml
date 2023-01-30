@@ -153,6 +153,8 @@ spec:
     params:
      - name: terraform-secret
        value: "terraform-secret"
+     - name: source-dir
+       value: $(workspaces.source.path)/cluster-manifest
      - name: ARGS
        value:
        - apply
@@ -225,9 +227,9 @@ spec:
     params:
     - name: SCRIPT
       value: |
-        oc apply -f k8s/operators
+        oc apply -f cluster-manifest/k8s/operator
         while ! oc get csv -n openshift-operators -l operators.coreos.com/openshift-gitops-operator.openshift-operators | grep Succeeded; do sleep 10; done 
-        oc apply -f k8s/openshift-gitops
+        oc apply -f cluster-manifest/k8s/openshift-gitops
     runAfter:
     - decrypt-secret
     - create-cluster-admin
@@ -261,7 +263,7 @@ spec:
     params:
     - name: SCRIPT
       value: |
-        oc apply -f k8s/projects.yaml
+        oc apply -f cluster-manifest/k8s/app/project.yaml
         oc create secret docker-registry pull-secret --docker-server=$(params.default-route-host) --docker-username=serviceaccount --docker-password=$(cat $(workspaces.manifest-dir.path)/cluster-manifest/k8s/app/secrets/pull-secret.txt) --docker-email=unused -n $(params.app-namespace)
         oc patch sa/builder --patch '{"imagePullSecrets":[{"name":"pull-secret"}]}' --type merge -n $(params.app-namespace) 
         oc import-image -n $(params.app-namespace) $(params.default-route-host)/$(params.app-namespace)/nginx --confirm
