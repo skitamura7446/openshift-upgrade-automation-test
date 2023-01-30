@@ -1,0 +1,64 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: rosa-create-pipelinerun
+spec:
+  pipelineRef:
+    name: rosa-create-pipeline 
+
+  params:
+  - name: rosa-token
+    value: 'eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhZDUyMjdhMy1iY2ZkLTRjZjAtYTdiNi0zOTk4MzVhMDg1NjYifQ.eyJpYXQiOjE2NzUwNDA5NjMsImp0aSI6IjYyMDVmYmMyLWI2NjItNDMwZi04MzRmLWZhNjk2ODlmODUwZiIsImlzcyI6Imh0dHBzOi8vc3NvLnJlZGhhdC5jb20vYXV0aC9yZWFsbXMvcmVkaGF0LWV4dGVybmFsIiwiYXVkIjoiaHR0cHM6Ly9zc28ucmVkaGF0LmNvbS9hdXRoL3JlYWxtcy9yZWRoYXQtZXh0ZXJuYWwiLCJzdWIiOiJmOjUyOGQ3NmZmLWY3MDgtNDNlZC04Y2Q1LWZlMTZmNGZlMGNlNjpza2l0YW11ckByZWRoYXQuY29tIiwidHlwIjoiT2ZmbGluZSIsImF6cCI6ImNsb3VkLXNlcnZpY2VzIiwibm9uY2UiOiIwMmMxZGI0NS1lYzIwLTQxYTUtODc0YS1kYTI1NDgzNDNmMjgiLCJzZXNzaW9uX3N0YXRlIjoiMTgzMTFjMTYtMmM5YS00OWYwLTg3NTQtZjlkOTNjOWU5Y2U3Iiwic2NvcGUiOiJvcGVuaWQgYXBpLmlhbS5zZXJ2aWNlX2FjY291bnRzIGFwaS5pYW0ub3JnYW5pemF0aW9uIG9mZmxpbmVfYWNjZXNzIiwic2lkIjoiMTgzMTFjMTYtMmM5YS00OWYwLTg3NTQtZjlkOTNjOWU5Y2U3In0.99CMRNVii0hGD4HcOxQxJ54cIbpECbfA_FTnBbBgc_0'
+  - name: rosa-cluster-name
+    value: 'democluster-001'
+  - name: rosa-region
+    value: 'us-east-1'
+  - name: rosa-cidr
+    value: '10.0.0.0/16'
+  - name: ARGS
+    value: '--multi-az --version "4.11.23"'
+  - name: git-url
+    value: 'https://github.com/skitamura7446/openshift-upgrade-automation-test'
+  - name: git-revision
+    value: 'master'
+  - name: default-route-host
+    value: 'default-route-openshift-image-registry.apps.aws-cluster-01.sandbox1580.opentlc.com'
+  - name: app-namespace
+    value: 'sample-blog'
+  - name: application-name
+    value: 'app-sample-blog'
+  - name: revision
+    value: 'master'
+  - name: app-host
+    value: 'sample-blog.sandbox1580.opentlc.com'
+  - name: zone-id
+    value: 'Z3OMFIUXX3RAEI'
+  - name: db-vpc-id
+    value: 'vpc-08adf6fb322d9acd7'
+  - name: db-vpc-cidr
+    value: '192.168.0.0/16'
+  - name: db-region
+    value: 'us-east-1'
+
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
+
+  workspaces:
+  - name: aws-credentials-secret
+    secret:
+      secretName: aws-credentials 
+  - name: rosa-config-workspace
+    persistentVolumeClaim:
+      claimName: rosa-config-workspace
+  - name: shared-workspace
+    persistentVolumeClaim:
+      claimName: shared-workspace
+  - name: kubeconfig-workspace
+    persistentVolumeClaim:
+      claimName: kubeconfig-workspace
+  - name: manifest-workspace
+    persistentVolumeClaim:
+      claimName: manifest-workspace
+
+  serviceAccountName: tekton-sa

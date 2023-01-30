@@ -75,3 +75,7 @@ resource "aws_db_instance" "test-db" {
 output "db_instance_endpoint" {
   value = aws_db_instance.test-db.endpoint
 }
+
+output "rds_vpc_id" {
+  value = aws_vpc.rds-vpc.id
+}

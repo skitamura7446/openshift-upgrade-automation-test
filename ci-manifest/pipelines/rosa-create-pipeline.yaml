@@ -131,7 +131,7 @@ spec:
        export ROSA_REGION=$(params.rosa-region)
        export ROSA_VPC_ID=$(aws ec2 describe-vpcs --region $(params.rosa-region) --query 'Vpcs[0].VpcId' --filter "Name=cidr-block-association.cidr-block,Values=$(params.rosa-cidr)" --output text)
        export ROSA_VPC_CIDR=$(params.rosa-cidr)
-       envsubst < $(workspaces.manifest.path)/terraform/vpc-peering-tpl.tf > $(workspaces.manifest.path)/terraform/vpc-peering.tf
+       envsubst < $(workspaces.manifest.path)/cluster-manifest/erraform/vpc-peering-tpl.tf > $(workspaces.manifest.path)/cluster-manifest/terraform/vpc-peering.tf
     workspaces:
     - name: aws-creds
       workspace: aws-credentials-secret
@@ -203,7 +203,7 @@ spec:
     params:
     - name: SCRIPT
       value: |
-        aws kms decrypt --ciphertext-blob fileb://$(workspaces.manifest.path)/k8s/$(params.app-namespace)/secrets/encrypted-pull-secret.txt --output text --region ap-northeast-1 --query Plaintext | base64 --decode > $(workspaces.manifest.path)/k8s/$(params.app-namespace)/secrets/pull-secret.txt 
+        aws kms decrypt --ciphertext-blob fileb://$(workspaces.manifest.path)/cluster-manifest/k8s/app/secrets/encrypted-pull-secret.txt --output text --region ap-northeast-1 --query Plaintext | base64 --decode > $(workspaces.manifest.path)/cluster-manifest/k8s/app/secrets/pull-secret.txt 
     workspaces:
     - name: aws-creds
       workspace: aws-credentials-secret
@@ -262,7 +262,7 @@ spec:
     - name: SCRIPT
       value: |
         oc apply -f k8s/projects.yaml
-        oc create secret docker-registry pull-secret --docker-server=$(params.default-route-host) --docker-username=serviceaccount --docker-password=$(cat $(workspaces.manifest-dir.path)/k8s/$(params.app-namespace)/secrets/pull-secret.txt) --docker-email=unused -n $(params.app-namespace)
+        oc create secret docker-registry pull-secret --docker-server=$(params.default-route-host) --docker-username=serviceaccount --docker-password=$(cat $(workspaces.manifest-dir.path)/cluster-manifest/k8s/app/secrets/pull-secret.txt) --docker-email=unused -n $(params.app-namespace)
         oc patch sa/builder --patch '{"imagePullSecrets":[{"name":"pull-secret"}]}' --type merge -n $(params.app-namespace) 
         oc import-image -n $(params.app-namespace) $(params.default-route-host)/$(params.app-namespace)/nginx --confirm
         oc import-image -n $(params.app-namespace) $(params.default-route-host)/$(params.app-namespace)/django --confirm
@@ -297,8 +297,8 @@ spec:
       value: |
         export INGRESS_RECORD=$(oc get ingresscontroller default -n openshift-ingress-operator -o jsonpath='{.status.domain}')
         export APP_HOST=$(params.app-host)
-        envsubst < $(workspaces.manifest.path)/other/record_tmp.json > $(workspaces.manifest.path)/other/record.json
-        aws route53 change-resource-record-sets --hosted-zone-id $(params.zone-id) --change-batch file://$(workspaces.manifest.path)/other/record.json
+        envsubst < $(workspaces.manifest.path)/cluster-manifest/other/record_tmp.json > $(workspaces.manifest.path)/clusster-manifest/other/record.json
+        aws route53 change-resource-record-sets --hosted-zone-id $(params.zone-id) --change-batch file://$(workspaces.manifest.path)/cluster-manifest/other/record.json
     workspaces:
     - name: aws-creds
       workspace: aws-credentials-secret

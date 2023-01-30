@@ -13,7 +13,7 @@ spec:
   source:
     kustomize:
     path: k8s/overlays/prod
-    repoURL: https://github.com/skitamura7446/openshift-upgrade-automation-test.git 
+    repoURL: ${GIT_URL}.git 
     targetRevision: master
   syncPolicy: {}
 #    automated:

@@ -8,7 +8,7 @@ spec:
   - namespace: sample-blog
     server: https://kubernetes.default.svc
   sourceRepos:
-  - https://github.com/skitamura7446/openshift-upgrade-automation-test.git 
+  - ${GIT_URL}.git 
   clusterResourceWhitelist:
   - group: '*'
     kind: '*'
