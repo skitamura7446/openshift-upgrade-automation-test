@@ -131,7 +131,7 @@ spec:
        export ROSA_REGION=$(params.rosa-region)
        export ROSA_VPC_ID=$(aws ec2 describe-vpcs --region $(params.rosa-region) --query 'Vpcs[0].VpcId' --filter "Name=cidr-block-association.cidr-block,Values=$(params.rosa-cidr)" --output text)
        export ROSA_VPC_CIDR=$(params.rosa-cidr)
-       envsubst < $(workspaces.manifest.path)/cluster-manifest/erraform/vpc-peering-tpl.tf > $(workspaces.manifest.path)/cluster-manifest/terraform/vpc-peering.tf
+       envsubst < $(workspaces.manifest.path)/cluster-manifest/terraform/vpc-peering.tpl > $(workspaces.manifest.path)/cluster-manifest/terraform/vpc-peering.tf
     workspaces:
     - name: aws-creds
       workspace: aws-credentials-secret
@@ -169,8 +169,8 @@ spec:
         #/bin/bash
         set +e
         rosa create admin --cluster=$(params.rosa-cluster-name) > $(workspaces.shared.path)/stdout.txt
-        if [[ $(cat $(workspaces.shared.path)/stdout.txt | grep "oc") ]] ; then
-          cat $(workspaces.shared.path)/stdout.txt | grep "oc" > $(workspaces.shared.path)/command.txt
+        if [[ $(cat $(workspaces.shared.path)/stdout.txt | grep "oc login") ]] ; then
+          cat $(workspaces.shared.path)/stdout.txt | grep "oc login" > $(workspaces.shared.path)/command.txt
         fi
         cat $(workspaces.shared.path)/command.txt
         while true ;
