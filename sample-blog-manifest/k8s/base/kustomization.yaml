@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: sample-blog
 
 resources:
-- django-configmap.yaml
+#- django-configmap.yaml
 - django-deployment.yaml
 - django-secret.yaml
 - django-service.yaml
@@ -14,7 +14,7 @@ resources:
 - mysql-pvc.yaml
 - mysql-statefulset.yaml
 - nginx-deployment.yaml
-- nginx-route.yaml
+#- nginx-route.yaml
 - nginx-service.yaml
 - redis-configmap.yaml
 - redis-service.yaml
